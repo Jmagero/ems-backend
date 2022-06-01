@@ -10,6 +10,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import jm.ems.emsbackend.exception.BadRequestException;
 import jm.ems.emsbackend.exception.ResourceNotFoundException;
 import jm.ems.emsbackend.model.Employee;
 import jm.ems.emsbackend.repository.EmployeeRepository;
@@ -23,7 +24,13 @@ public class EmployeeService {
 		return employeeRepository.findAll();	
 	}
 	
-	public void addEmployee(Employee employee) {
+	public void addEmployee(Employee employee){
+		 Boolean existsEmail = employeeRepository
+	                .selectExistsEmail(employee.getEmailId());
+	        if (existsEmail) {
+	            throw new BadRequestException(
+	                    "Email " + employee.getEmailId() + " taken");
+	        }
 		employeeRepository.save(employee);
 	}
 	
